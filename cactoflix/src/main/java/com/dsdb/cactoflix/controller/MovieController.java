@@ -1,4 +1,29 @@
 package com.dsdb.cactoflix.controller;
 
+
+import com.dsdb.cactoflix.model.Movie;
+import com.dsdb.cactoflix.service.MovieService;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+// TODO: Implementar Sistema que gera notas
+@AllArgsConstructor
+@RestController
+@RequestMapping("/movies")
 public class MovieController {
+    private final MovieService movieService;
+
+    @GetMapping
+    public List<Movie> getMovies(
+         @RequestParam(required = false) String name,
+         @RequestParam(required = false) List<String> genre) {
+        return movieService.getMovies(null,name,genre);
+    }
+
+    @GetMapping("/{id}")
+    public List<Movie> getMovieById(@PathVariable Long id){
+        return movieService.getMovies(id,null,null);
+    }
 }
