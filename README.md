@@ -72,9 +72,11 @@ verdade num banco **MongoDB**, usando `MongoTemplate`. Contém `MovieRepository`
   protege o resto da aplicação de saber de onde os dados vêm (antes era lista fixa,
   agora é banco, pro service, é tudo igual).
 
-## DHENER ATENÇÃO!!!!!!
-Ainda não é um banco distribuido de verdade, é só uma instância única do Mongo rodando local, sem réplica, sem eleição de primario, sem sincronização entre nós, que é o que trabaio pede e a gente especificou.
-Nesse caso, vai ter que ter um `docker-compose.yml` e um `init-replica-set.js` .
+## Para Rodar o Banco
+ - Necessita ter o docker instalado na maquina
+ - o terminal rode o comando `docker compose up -d` na pasta raiz do projeto. Isso ja vai iniciar o banco e rodar o docker.
+ - Da pra verificar se está tudo ok com o banco rodando o comando `docker logs -f mongo-setup`. Se aparecer ok(1) na teoria esta tudo ok!
+ - Obs: Se vc for rodar isso no linux ubuntu tem um processo chatinho que precisa ser feito pra ele reconhecer o banco como localhost tbm, podem me chamar(Dhener) se tiverem essa dificuldade.
 
 ### `model`
 As **entidades** do domínio: `Movie`, `Rating`, `User`. São objetos Java simples, com os
