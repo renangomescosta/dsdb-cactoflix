@@ -55,10 +55,26 @@ avaliações, cruzar notas. Fica isolada tanto do HTTP (controller) quanto da or
 dados (repository), o que a torna fácil de testar. Contém `MovieService`,
 `RatingService`, `UserService`.
 
-### `repository`
-As classes que **fornecem os dados**. Hoje devolvem listas mocadas (fixas no código).
-Quando plugarmos um banco, a mudança acontece só aqui — o resto da aplicação não muda.
-Contém `MovieRepository`, `RatingRepository`, `UserRepository`.
+### `repository` - Dérick
+As classes que **fornecem os dados**. Antes devolviam listas mocadas (fixas no código,
+que voltavam ao original toda vez que a aplicação reiniciava). Agora buscam os dados de
+verdade num banco **MongoDB**, usando `MongoTemplate`. Contém `MovieRepository`,
+`RatingRepository`, `UserRepository` 👍
+
+**O que mudou:**
+- Banco: `db_dsid`. Cada repository tem sua própria collection (`movies`, `ratings`,
+  `users`) — uma pra cada.
+- A conexão fica configurada no `application.properties` (`spring.data.mongodb.uri`),
+  então não tem mais aquele `DATABASE_URL = "preencher"` espalhado pelo código.
+- `RatingRepository` agora tem `save()` e `update()` de verdade — antes eram só
+  `//TODO` que não faziam nada kkkkkk (mas era o que tinha que fazer)
+- Controller e Service **não mudaram nada**. É por isso que essa camada existe: ela
+  protege o resto da aplicação de saber de onde os dados vêm (antes era lista fixa,
+  agora é banco, pro service, é tudo igual).
+
+## DHENER ATENÇÃO!!!!!!
+Ainda não é um banco distribuido de verdade, é só uma instância única do Mongo rodando local, sem réplica, sem eleição de primario, sem sincronização entre nós, que é o que trabaio pede e a gente especificou.
+Nesse caso, vai ter que ter um `docker-compose.yml` e um `init-replica-set.js` .
 
 ### `model`
 As **entidades** do domínio: `Movie`, `Rating`, `User`. São objetos Java simples, com os
