@@ -10,25 +10,11 @@ import java.util.List;
 public class MovieService {
     private final MovieRepository movieRepository;
 
+    public Movie findById(Long id) {
+        return movieRepository.findMovieById(id);
+    }
 
-    public List<Movie> getMovies(Long id,String name,List<String> genre){
-        // TODO: Trocar querys para o banco de dados => (-) Latência
-        List<Movie> movies = movieRepository.fetchData();
-        if (id!=null){
-            movies = movies.stream()
-                    .filter(movie -> movie.getId().equals(id))
-                    .toList();
-        }
-        if (name!=null){
-            movies = movies.stream()
-                    .filter(movie -> movie.getName().contains(name))
-                    .toList();
-        }
-        if (genre!=null){
-            movies = movies.stream()
-                    .filter(movie -> movie.getGenres().containsAll(genre))
-                    .toList();
-        }
-        return movies;
+    public List<Movie> getMovies(String name,List<String> genre){
+        return movieRepository.findMovieByfilters(genre, name);
     }
 }

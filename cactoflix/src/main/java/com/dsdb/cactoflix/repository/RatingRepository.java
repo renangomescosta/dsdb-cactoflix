@@ -15,7 +15,6 @@ import java.util.Optional;
 // Repository no Spring Boot => Entrega o mesmo objeto pra todos => Singleton
 @Repository
 public class RatingRepository {
-    //TODO: Aqui entra o banco de dados
 
     private static final String COLLECTION_NAME = "ratings";
 
@@ -34,15 +33,9 @@ public class RatingRepository {
         return;
     }
 
-    // apaga e insere um novo rating no lugar
+    // atualiza o rate
     public void update(Rating rating) {
-        Query query = new Query(
-                Criteria.where("userId").is(rating.getUserId())
-                        .and("movieId").is(rating.getMovieId())
-        );
-
-        mongoTemplate.remove(query, Rating.class, COLLECTION_NAME);
-        mongoTemplate.insert(rating, COLLECTION_NAME);
+        mongoTemplate.save(rating, COLLECTION_NAME);
     }
 
     public List<Rating> findByUser(int userId) {

@@ -3,4 +3,4 @@ spring:
     name: cactoflix
   data:
     mongodb:
-      uri: ${MONGODB_URI:mongodb://localhost:27017/db_dsid}
+      uri: ${MONGODB_URI:mongodb://localhost:27017,localhost:27018,localhost:27019,localhost:27020,localhost:27021/db_dsid?replicaSet=cenAdm&readPreference=nearest}

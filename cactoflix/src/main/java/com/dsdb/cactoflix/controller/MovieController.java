@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// TODO: Implementar Sistema que gera notas
 @AllArgsConstructor
 @RestController
 @RequestMapping("/movies")
@@ -19,11 +18,11 @@ public class MovieController {
     public List<Movie> getMovies(
          @RequestParam(required = false) String name,
          @RequestParam(required = false) List<String> genre) {
-        return movieService.getMovies(null,name,genre);
+        return movieService.getMovies(name,genre);
     }
 
     @GetMapping("/{id}")
-    public List<Movie> getMovieById(@PathVariable Long id){
-        return movieService.getMovies(id,null,null);
+    public Movie getMovieById(@PathVariable Long id){
+        return movieService.findById(id);
     }
 }
