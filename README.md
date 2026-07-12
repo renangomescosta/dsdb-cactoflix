@@ -78,6 +78,9 @@ verdade num banco **MongoDB**, usando `MongoTemplate`. Contém `MovieRepository`
  - Da pra verificar se está tudo ok com o banco rodando o comando `docker logs -f mongo-setup`. Se aparecer ok(1) na teoria esta tudo ok!
  - Obs: Se vc for rodar isso no linux ubuntu tem um processo chatinho que precisa ser feito pra ele reconhecer o banco como localhost tbm, podem me chamar(Dhener) se tiverem essa dificuldade.
 
+## Para Parar o Docker
+ - Apenas rode o comando `docker compose stop`;
+
 ### `model`
 As **entidades** do domínio: `Movie`, `Rating`, `User`. São objetos Java simples, com os
 campos do negócio e nada de framework. É o núcleo, reutilizado por todas as outras camadas.
