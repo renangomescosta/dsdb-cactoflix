@@ -37,13 +37,13 @@ public class MovieRepository {
             query.addCriteria(Criteria.where("name").regex(name,"i"));
         }
         if (genre != null && !genre.isEmpty()){
-            query.addCriteria(Criteria.where("genre").in(genre));
+            query.addCriteria(Criteria.where("genres").in(genre));
         }
-        return mongoTemplate.find(query, Movie.class);
+        return mongoTemplate.find(query, Movie.class, COLLECTION_NAME);
     }
 
     public Movie findMovieById(Long id) {
-        return mongoTemplate.findById(id, Movie.class);
+        return mongoTemplate.findById(id, Movie.class, COLLECTION_NAME);
     }
 
 }

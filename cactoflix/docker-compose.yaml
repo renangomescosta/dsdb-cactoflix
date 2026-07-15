@@ -5,7 +5,7 @@ services:
     build: .
     environment:
       SPRING_PROFILES_ACTIVE: "app"
-      SPRING_DATA_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
+      SPRING_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
     depends_on:
       mongo-setup:
         condition: service_completed_successfully
@@ -15,7 +15,7 @@ services:
     build: .
     environment:
       SPRING_PROFILES_ACTIVE: "app"
-      SPRING_DATA_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
+      SPRING_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
     depends_on:
       mongo-setup:
         condition: service_completed_successfully
@@ -25,7 +25,7 @@ services:
     build: .
     environment:
       SPRING_PROFILES_ACTIVE: "app"
-      SPRING_DATA_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
+      SPRING_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
     depends_on:
       mongo-setup:
         condition: service_completed_successfully
