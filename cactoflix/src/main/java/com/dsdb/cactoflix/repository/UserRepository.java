@@ -2,6 +2,7 @@ package com.dsdb.cactoflix.repository;
 
 import com.dsdb.cactoflix.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 // Repository no String Boot => Entrega o mesmo objeto pra todos => Singleton
 @Repository
+@Profile("app")
 public class UserRepository {
 
     private static final String COLLECTION_NAME = "users";

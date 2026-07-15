@@ -1,6 +1,7 @@
 package com.dsdb.cactoflix.recommendation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import java.util.Map;
  * (movieId, score). Quem busca as notas no Mongo é o RecommendationService.
  */
 @Component
+@Profile("app")
 public class SvdRecommender {
 
     /** Mínimo de avaliações válidas para o fold-in (abaixo disso: fallback). */

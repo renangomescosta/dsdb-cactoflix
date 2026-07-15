@@ -2,6 +2,7 @@ package com.dsdb.cactoflix.repository;
 
 import com.dsdb.cactoflix.model.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,6 +14,7 @@ import java.util.List;
 
 // Repository no String Boot => Entrega o mesmo objeto pra todos => Singleton
 @Repository
+@Profile("app")
 public class MovieRepository {
     private static final String COLLECTION_NAME = "movies";
     
@@ -27,10 +29,16 @@ public class MovieRepository {
         return mongoTemplate.findAll(Movie.class, COLLECTION_NAME);
     }
 
-    public List<Movie> findMovieByfilters(List<String> genre, String name) {
+    public List<Movie> findMovieFilters(String name ,List<String> genre) {
 
-        Query query = new Query(Criteria.where("genre").in(genre)
-                                .and("name").regex(name));
+        Query query = new Query();
+
+        if (name != null && !name.isBlank()){
+            query.addCriteria(Criteria.where("name").regex(name,"i"));
+        }
+        if (genre != null && !genre.isEmpty()){
+            query.addCriteria(Criteria.where("genre").in(genre));
+        }
         return mongoTemplate.find(query, Movie.class);
     }
 

@@ -4,6 +4,7 @@ package com.dsdb.cactoflix.controller;
 import com.dsdb.cactoflix.model.Movie;
 import com.dsdb.cactoflix.service.MovieService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/movies")
+@Profile("app")
 public class MovieController {
     private final MovieService movieService;
 

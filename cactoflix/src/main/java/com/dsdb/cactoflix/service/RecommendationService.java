@@ -7,6 +7,7 @@ import com.dsdb.cactoflix.recommendation.SvdRecommender;
 import com.dsdb.cactoflix.repository.MovieRepository;
 import com.dsdb.cactoflix.repository.RatingRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.Map;
  */
 @AllArgsConstructor
 @Service
+@Profile("app")
 public class RecommendationService {
 
     /** Amortecimento da média no fallback: filmes com poucas notas não dominam o ranking. */

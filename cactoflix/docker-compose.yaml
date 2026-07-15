@@ -1,6 +1,50 @@
 version: '3.8'
 
 services:
+  app1:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: "app"
+      SPRING_DATA_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
+    depends_on:
+      mongo-setup:
+        condition: service_completed_successfully
+    networks:
+      - mongo-cluster
+  app2:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: "app"
+      SPRING_DATA_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
+    depends_on:
+      mongo-setup:
+        condition: service_completed_successfully
+    networks:
+      - mongo-cluster
+  app3:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: "app"
+      SPRING_DATA_MONGODB_URI: "mongodb://banco1:27017,banco2:27017,banco3:27017,banco4:27017,banco5:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
+    depends_on:
+      mongo-setup:
+        condition: service_completed_successfully
+    networks:
+      - mongo-cluster
+
+  load-balancer:
+    build: .
+    environment:
+      - SPRING_PROFILES_ACTIVE=lb
+    ports:
+      - "8080:8080"
+    depends_on:
+      - app1
+      - app2
+      - app3
+    networks:
+      - mongo-cluster
+
   banco1:
     image: mongo:latest
     container_name: banco1
@@ -66,12 +110,11 @@ services:
       - banco3
       - banco4
       - banco5
-    # Mapeia o seu arquivo JS da sua máquina para dentro do container
+
     volumes:
-      - ./Mongodb.js:/scripts/Mongodb.js
+      - ./Mongodb.js:/scripts/Mongodb.js:ro,Z
     networks:
       - mongo-cluster
-    # Esse é o script automático que faz todo o trabalho manual por você
     command: >
       bash -c "
         echo 'Aguardando 10s para os bancos iniciarem...';

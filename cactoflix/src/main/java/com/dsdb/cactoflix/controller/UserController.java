@@ -5,12 +5,14 @@ import com.dsdb.cactoflix.model.User;
 
 import com.dsdb.cactoflix.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/users")
+@Profile("app")
 public class UserController {
     private final UserService userService;
 
