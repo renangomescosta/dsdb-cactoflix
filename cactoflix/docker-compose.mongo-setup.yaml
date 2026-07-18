@@ -1,0 +1,27 @@
+services:
+  mongo-setup:
+    image: mongo:latest
+    volumes:
+      - ./Mongodb.js:/scripts/Mongodb.js:ro
+    command: >
+      bash -c "
+        echo 'Iniciando a configuração do Replica Set...';
+        mongosh --host ${BANCO1_IP}:27017 --eval 'rs.initiate({
+          _id: \"cenAdm\",
+          members: [
+            { _id: 0, host: \"${BANCO1_IP}:27017\", priority: 4 },
+            { _id: 1, host: \"${BANCO2_IP}:27017\", priority: 3 },
+            { _id: 2, host: \"${BANCO3_IP}:27017\", priority: 2 },
+            { _id: 3, host: \"${BANCO4_IP}:27017\", priority: 2 },
+            { _id: 4, host: \"${BANCO5_IP}:27017\", priority: 1 }
+          ]
+        })';
+
+        echo 'Aguardando 15s para a eleição do Primário terminar...';
+        sleep 15;
+
+        echo 'Rodando o arquivo Mongodb.js para popular o banco...';
+        mongosh --host ${BANCO1_IP}:27017 /scripts/Mongodb.js;
+
+        echo 'Tudo pronto! O banco do Cactoflix está configurado e populado.';
+      "
