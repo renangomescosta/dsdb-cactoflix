@@ -3,69 +3,48 @@ import './recommendations.css'
 import MovieCard from './MovieCard'
 
 const recommendationsEndpoint = '/api/recommendations'
-const moviesEndpoint = '/api/movies'
 const tmdbApiKey = "e32a304ca6fe99a617c35c56571fef48"
-const tmdbSearchEndpoint = 'https://api.themoviedb.org/3/search/movie'
+const tmdbDiscoverEndpoint = 'https://api.themoviedb.org/3/discover/movie'
+const tmdbGenresEndpoint = 'https://api.themoviedb.org/3/genre/movie/list'
 const tmdbImageBaseUrl = 'https://image.tmdb.org/t/p/w500'
+const maxRandomPage = 500
 
-/**
- * Busca o poster de um filme na TMDB pelo nome.
- */
-const fetchPosterByName = async (movieName) => {
-    try {
-        const cleanName = movieName.replace(/\s*\(\d{4}\)\s*$/, '').trim()
-        const response = await fetch(
-            `${tmdbSearchEndpoint}?api_key=${tmdbApiKey}&language=pt-BR&query=${encodeURIComponent(cleanName)}`
-        )
-        if (!response.ok) return null
-        const data = await response.json()
-        const result = data.results && data.results.length > 0 ? data.results[0] : null
-        if (!result || !result.poster_path) return null
-        return `${tmdbImageBaseUrl}${result.poster_path}`
-    } catch {
-        return null
-    }
-}
+const buildRandomPage = () => Math.floor(Math.random() * maxRandomPage) + 1
 
-/**
- * Busca filmes do catálogo do backend (IDs compatíveis com o modelo SVD)
- * e depois busca os posters da TMDB pelo nome do filme.
- */
 const getRandomMovies = async () => {
-    const response = await fetch(moviesEndpoint, {
-        headers: { 'X-Client-Email': 'test@dsid.com' },
-    })
+    const randomPage = buildRandomPage()
+    const [moviesResponse, genresResponse] = await Promise.all([
+        fetch(
+            `${tmdbDiscoverEndpoint}?api_key=${tmdbApiKey}&language=pt-BR&sort_by=popularity.desc&page=${randomPage}`
+        ),
+        fetch(`${tmdbGenresEndpoint}?api_key=${tmdbApiKey}&language=pt-BR`),
+    ])
 
-    if (!response.ok) {
-        throw new Error('Falha ao buscar filmes do catálogo')
+    if (!moviesResponse.ok) {
+        throw new Error('Falha ao buscar filmes da TMDB')
     }
 
-    const allMovies = await response.json()
-
-    // Embaralha e pega 10 aleatórios (Fisher-Yates)
-    const shuffled = [...allMovies]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    if (!genresResponse.ok) {
+        throw new Error('Falha ao buscar gêneros da TMDB')
     }
 
-    const selected = shuffled.slice(0, 10)
-
-    // Busca posters em paralelo
-    const moviesWithPosters = await Promise.all(
-        selected.map(async (movie) => {
-            const poster = await fetchPosterByName(movie.name)
-            return {
-                id: movie.id,
-                title: movie.name,
-                image: poster || 'https://via.placeholder.com/500x750?text=Sem+Imagem',
-                genres: movie.genres || [],
-                rating: 0,
-            }
-        })
+    const moviesData = await moviesResponse.json()
+    const genresData = await genresResponse.json()
+    const genreMap = new Map(
+        (genresData.genres || []).map((genre) => [genre.id, genre.name])
     )
 
-    return moviesWithPosters
+    return (moviesData.results || []).slice(0, 10).map((movie) => ({
+        id: movie.id,
+        title: movie.title,
+        image: movie.poster_path
+            ? `${tmdbImageBaseUrl}${movie.poster_path}`
+            : 'https://via.placeholder.com/500x750?text=Sem+Imagem',
+        rating: 0,
+        genres: (movie.genre_ids || [])
+            .map((genreId) => genreMap.get(genreId))
+            .filter(Boolean),
+    }))
 }
 
 const Recommendations = ({ onSubmitComplete }) => {
@@ -157,26 +136,24 @@ const Recommendations = ({ onSubmitComplete }) => {
     }
 
     const handleSubmit = async () => {
-        const ratedMovies = movies.filter((movie) => movie.rating > 0)
-
-        if (ratedMovies.length < 3) {
-            setError('Avalie pelo menos 3 filmes para obter recomendações personalizadas.')
-            return
-        }
-
         try {
             setSubmitting(true)
             setError('')
 
+
             const payload = {
-                ratings: ratedMovies.map((movie) => ({
-                    userId: 0,
-                    movieId: movie.id,
-                    rating: movie.rating,
-                })),
+                ratings: movies
+                    .filter((movie) => movie.rating > 0)
+                    .map((movie) => ({
+                        userId: 0,
+                        movieId: movie.id,
+                        rating: Math.round(movie.rating),
+                        name: movie.title,
+                        genres: movie.genres,
+                    })),
             }
 
-            const response = await fetch(`${recommendationsEndpoint}?k=10`, {
+            const response = await fetch(`${recommendationsEndpoint}?k=10&userId=0`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -186,8 +163,6 @@ const Recommendations = ({ onSubmitComplete }) => {
             })
 
             if (!response.ok) {
-                const errorText = await response.text()
-                console.error('Backend response:', response.status, errorText)
                 throw new Error('Falha ao obter recomendações do backend')
             }
 
@@ -207,7 +182,7 @@ const Recommendations = ({ onSubmitComplete }) => {
     }
 
     if (loading) {
-        return <div className='recommendations'>Carregando filmes do catálogo...</div>
+        return <div className='recommendations'>Carregando filmes aleatórios...</div>
     }
 
     if (error && movies.length === 0) {
@@ -217,7 +192,6 @@ const Recommendations = ({ onSubmitComplete }) => {
     return (
         <div className='recommendations'>
             <h2 className='recommendations__title'>Avalie os filmes abaixo</h2>
-            <p className='recommendations__subtitle'>Avalie pelo menos 3 filmes (mova o slider)</p>
             {error && <p className='recommendations__error'>{error}</p>}
             <div
                 className='carousel'
