@@ -1,0 +1,8 @@
+services:
+  load-balancer:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: "lb"
+      LOADBALANCER_BACKENDS: "http://${APP1_IP}:8080,http://${APP2_IP}:8080,http://${APP3_IP}:8080"
+    ports:
+      - "8080:8080"

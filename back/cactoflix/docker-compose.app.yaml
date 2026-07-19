@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: "app"
+      SPRING_MONGODB_URI: "mongodb://${BANCO1_IP}:27017,${BANCO2_IP}:27017,${BANCO3_IP}:27017,${BANCO4_IP}:27017,${BANCO5_IP}:27017/db_dsid?replicaSet=cenAdm&readPreference=nearest"
+    ports:
+      - "8080:8080"
